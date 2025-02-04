@@ -42,7 +42,6 @@ def fetch_stock_data(conn, filters=None):
         return pd.DataFrame()
 
 if __name__ == "__main__":
-    import pyodbc
     from db_connector import connect_to_database
 
     # Ruta de prueba de la base de datos
