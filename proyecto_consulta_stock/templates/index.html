@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Consulta de Stock</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <h1>Consulta de Stock</h1>
+
+    <form id="consultaForm">
+        <label for="codigo">Código del Producto:</label>
+        <input type="text" id="codigo" name="codigo" required>
+        <button type="submit">Consultar</button>
+    </form>
+
+    <div id="resultados">
+        <table id="tablaResultados">
+            <thead>
+                <tr>
+                    <th>Sucursal</th>
+                    <th>Pzs</th>
+                    <th>Cajas</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Se insertarán filas dinámicamente -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        document.getElementById('consultaForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const codigo = document.getElementById('codigo').value;
+            const tbody = document.querySelector('#tablaResultados tbody');
+            tbody.innerHTML = ''; // Limpiar la tabla
+
+            try {
+                const response = await fetch('/consultar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ codigo })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    data.forEach(row => {
+                        const tr = document.createElement('tr');
+                        tr.innerHTML = `
+                            <td>${row.Sucursal}</td>
+                            <td>${row.Pzs}</td>
+                            <td>${row.Cajas}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error}`);
+                }
+            } catch (err) {
+                alert('Error al realizar la consulta. Por favor, intenta de nuevo.');
+            }
+        });
+    </script>
+</body>
+</html>
